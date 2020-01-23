@@ -132,4 +132,6 @@ dmypy.json
 .idea/
 *.json
 
-media/
+*.jpeg
+*.jpg
+*.psd

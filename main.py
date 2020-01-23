@@ -20,7 +20,6 @@ bucket = storage_client.get_bucket(bucket_name)
 
 def remove(jpg, psd):
     os.remove(jpg)
-    os.remove(psd)
 
 
 def uploud_to_small(local, file_name):
@@ -45,24 +44,28 @@ def converter(files):
             print(f"Illustration {file}.jpeg downloaded to ../media/jpg/")
 
             uploud_to_small(jpg_file, file)
-            remove(jpg_file, psd_file)
         except:
             print(file, 'err')
 
         print("----------------------")
 
 
-def update_deploy(file_list):
+def compare_with_deploy(file_list):
     code_result = []
 
     response = requests.get(url=env('HEROKU_URL'), headers={'Authorization': f"Bearer {env('AUTHORIZATION')}"})
     file_heroku = json.loads(response.content)
 
     for file in file_heroku:
-        if file['image'] is None:
-            code_result.append(file['code'])
+        code_result.append(file['code'])
+        if not file['code'] in file_list:
+            print(file['code'])
+        # if file['image'] is None:
+        #     code_result.append(file['code'])
 
     diff_list = list(set(code_result) - set(file_list))
+    # diff_list = list(set(file_list) - set(code_result))
+    print(len(diff_list))
 
 
 def compare(bucket):
@@ -71,10 +74,14 @@ def compare(bucket):
     original_list = [os.path.splitext(os.path.basename(file.name))[0] for file in files_original if '.' in file.name]
     small_list = [os.path.splitext(os.path.basename(file.name))[0] for file in files_small if '.' in file.name]
 
+    print(f'Total of original files: {len(original_list)}')
+    print(f'Total of small files: {len(small_list)}')
+    print(small_list)
+
     diff_list = list(set(original_list) - set(small_list))
     print(f'Total of difference: {len(diff_list)}')
-    # update_deploy(diff_list)
-    # converter(diff_list)
+    # compare_with_deploy(small_list)
+    converter(diff_list)
 
 
 compare(bucket)
