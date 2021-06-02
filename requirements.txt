@@ -18,5 +18,5 @@ requests==2.22.0
 rsa==4.0
 setuptools==45.1.0
 six==1.14.0
-urllib3==1.25.7
+urllib3==1.26.5
 
